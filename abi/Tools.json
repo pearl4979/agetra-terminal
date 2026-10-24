@@ -1,0 +1,295 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "presetId",
+        "type": "uint256"
+      }
+    ],
+    "name": "encodePresetTags",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "encodedTags",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "options",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      }
+    ],
+    "name": "estimateBuy",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "curveQuote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userPays",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userReceives",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionPrice",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TradeEstimate",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxPayAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "options",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      }
+    ],
+    "name": "estimateBuyByBudget",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "curveQuote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userPays",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userReceives",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionPrice",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TradeEstimate",
+        "name": "estimate",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "trader",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "options",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      }
+    ],
+    "name": "estimateSell",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "curveQuote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userPays",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "userReceives",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "executionPrice",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct TradeEstimate",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getCurveLiquiditySnapshot",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "available",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialQuoteLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialTokenLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentQuoteLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "currentTokenLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "remainingForSale",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalRaised",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastPrice",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct OpenFourTypes.CurveLiquiditySnapshot",
+        "name": "snapshot",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

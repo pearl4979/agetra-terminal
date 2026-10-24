@@ -1,0 +1,53 @@
+{
+  "chainId": 56,
+  "registry": "0x912CEf0C3aE9Ab6eB3Ec87cab69371cFb317Ab94",
+  "core": "0xebe7b6C1089D9F72aD07f34E36d898e44E5e27f3",
+  "tools": "0x97DA82f56FEF1A0B974587a48135fa9dA2A4E905",
+  "wrappedNative": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "templateId": "1778027615735",
+  "templateName": "Binance Agent ID Exclusive",
+  "deploymentTransaction": "0x5efab8b3fc689888b146a2bc059f890c3471d2da2782ca74fbaed3e1c6bad82e",
+  "deploymentBlock": 129364687,
+  "confirmations": 5,
+  "reorgWindow": 20,
+  "tokenTag": "token.tax.binance_agent",
+  "tokenImplId": "0x35308f6d99adb6261b065acea232d4d2ac1c537e7e456870aaa7ca2540f7ebaa",
+  "encodedTags": "0x0181df3253a0717815ec7ee2ae4aa07c3ecf50b07e6760f3b454a8e7f1c2a9d6c89a1c0050bc65200137d2350f0b6e04f00000000000000000",
+  "modules": {
+    "tokenModuleId": {
+      "id": "0xdf9abf02ddeb0a1c3df3579c5c625908dbec6f06cf20ccc218ee8a04bd7c5165",
+      "implementation": "0x0A596e876BaCf3cE8226106921afa771bdC45Ea5",
+      "tag": "module.token.binance_agent"
+    },
+    "vaultModuleId": {
+      "id": "0x75d717b5bedefe4ec3f9fb6bd971008fa464bb02d8c1bb02924dc72dc554e166",
+      "implementation": "0x2CE2Ccf4245921Bf744D88D7AC3a304aae64F5b1",
+      "tag": "module.vault.tax_bonding"
+    },
+    "curveModuleId": {
+      "id": "0x80d6cb6a33cb6a4e4e08bc94d2857126d75ecdf73af7d459e0e3ce91d0fa3a72",
+      "implementation": "0x1559325d5c523dF2b5209B7ECd7fFeCc162E1F48",
+      "tag": "module.curve.bonding_binance_agent"
+    },
+    "tradeModuleId": {
+      "id": "0xf7cd7aaba324d46d29261fdecaf9c6118ea665b9b512712150c3e41580f8fb5e",
+      "implementation": "0x8Ed7f73985E4Ef76d0F2eeBA4026B89B228CA874",
+      "tag": "module.trade.tax_bonding_binance_agent"
+    },
+    "migrateModuleId": {
+      "id": "0x43870b0a6bc2d211e33775a06d4240a7c554c9f9017e633d94ea368199fcf1ed",
+      "implementation": "0x86F564D6b6B69B311434b696F12Fe0e6B0b14c1D",
+      "tag": "module.migrate.pcs_v2"
+    }
+  },
+  "verification": {
+    "block": 129389912,
+    "repository": "https://github.com/four-meme-community/openfour-docs",
+    "commit": "c1729948cc3487d4b4c38a1700664b881a71b561",
+    "integrationGuide": "https://github.com/four-meme-community/openfour-docs/blob/main/docs/integration-guide.md",
+    "abiLicense": "MIT",
+    "note": "ABIs are filtered unchanged from official interfaces. Binance Agent-specific implementation source is not included in the public repository. Current identity verified using Registry, descriptor and runtime eth_call."
+  },
+  "limitRule": "链上模板说明每个地址最多购买总量1%；具体累计/净持仓计算未通过公开源码独立确认，提交前以真实账户报价与 Core eth_call 模拟执行约束。",
+  "tokenImplementation": "0xC4A52A520Bb379a37e44c31bEb1edf7fFdC4a27D"
+}

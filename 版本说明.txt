@@ -1,0 +1,8 @@
+Agetra Terminal v0.2.2 Windows x64 便携测试版
+更新：从 Four Agent Terminal 更名为 Agetra Terminal；同步界面、启动提示、包名和使用说明。
+交易协议、合约地址、RPC 默认值和交易执行逻辑沿用 v0.2.1。
+默认关闭真实交易；保留实时监控、模板校验、钱包连接和演示模式。
+未包含个人 .env、.runtime、钱包登录状态、凭据或订单记录。
+运行环境：原包 Node.js 24.14.0 Windows x64；依赖版本保持锁定。
+范围：仅指定 Binance Agent ID Exclusive 模板的内盘；不支持毕业后的外盘交易。
+验证状态：本版本的验证结果以 GitHub Release 说明为准；不代表完成真实资金买卖闭环或防夹验证。

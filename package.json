@@ -1,0 +1,21 @@
+{
+  "name": "agetra-terminal",
+  "version": "0.2.2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.mjs",
+    "demo": "node --env-file-if-exists=.env src/server.mjs --demo",
+    "baw": "baw",
+    "test": "node --test test/*.test.mjs",
+    "verify:chain": "node --env-file-if-exists=.env scripts/verify-chain.mjs"
+  },
+  "dependencies": {
+    "@binance/agentic-wallet": "1.11.0",
+    "ethers": "6.17.0"
+  },
+  "description": "Agetra Terminal — a local-first Agentic Wallet trading terminal"
+}

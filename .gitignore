@@ -1,0 +1,26 @@
+# Installed dependencies and bundled Windows runtime belong in release assets.
+/node_modules/
+/runtime/
+
+# Local configuration and wallet / order state.
+.env
+.env.*
+!.env.example
+.runtime/
+.baw/
+.agentic-wallet/
+
+# Release outputs and temporary files.
+/dist/
+/coverage/
+*.log
+*.tmp
+*.bak
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+
+# Local editor state.
+.idea/
+.vscode/
