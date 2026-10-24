@@ -1,5 +1,5 @@
-Agetra Terminal v0.2.3 Windows x64 便携版
-更新：演示模式使用 Test、Test2、Test3、Test4 的名称、地址和头像快照。
+Agetra Terminal v0.2.4 Windows x64 便携版
+更新：新增 RPC 节点设置，支持连接测试、保存应用、自定义付费节点及恢复默认。
 功能：代币雷达、模板校验、Agent 钱包连接、快速交易预览和演示模式。
 默认关闭真实交易；执行前需逐笔预览与确认。
 未包含个人 .env、.runtime、钱包登录状态、凭据或订单记录。

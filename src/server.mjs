@@ -9,11 +9,13 @@ import { createTradeService } from './trades.mjs';
 import { createDemo } from './demo.mjs';
 import { createAuthService } from './auth.mjs';
 import { expiryMs } from './baw.mjs';
+import { createRpcSettings } from './rpc-settings.mjs';
+import { createRpcRuntime } from './rpc-runtime.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const assets = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/javascript'], '/style.css': ['style.css', 'text/css'] };
 
-export function createHttpServer({ monitor, baw, trades, protocol, metadata, demo = false, liveExecution = false }) {
+export function createHttpServer({ monitor, baw, trades, protocol, metadata, rpcSettings, demo = false, liveExecution = false }) {
   const csrf = randomBytes(32).toString('hex');
   let walletCache;
   let walletTime = 0;
@@ -22,6 +24,7 @@ export function createHttpServer({ monitor, baw, trades, protocol, metadata, dem
   let previewPending = false;
   let previewTime = 0;
   let executionRevision = 0;
+  let rpcBusy = false, actionPending = 0;
   function invalidateWallet() { walletTime = 0; walletGeneration++; }
   const auth = !demo && baw.authStart ? createAuthService({ baw, onConnected: () => { invalidateWallet(); trades.setLiveExecution(false); executionRevision++; } }) : null;
   const executionEnabled = () => demo || (trades.isLiveExecution?.() ?? liveExecution);
@@ -58,7 +61,9 @@ export function createHttpServer({ monitor, baw, trades, protocol, metadata, dem
     try {
       const url = new URL(req.url, 'http://localhost');
       const path = url.pathname;
+      if (rpcBusy && req.method === 'POST') return send(409, { error: 'RPC 正在切换，请稍后再试' });
       if (req.method === 'GET') {
+        if (path === '/api/settings/rpc') return rpcSettings ? send(200, { ...rpcSettings.snapshot(), demo }) : send(404, { error: 'RPC 设置不可用' });
         if (path === '/api/session') return send(200, { csrf, mode: demo ? 'demo' : 'live', liveExecution: executionEnabled(), mev: { status: 'unverified', label: '防夹未验证', description: '当前 baw contract-call 广播通道未披露 MEV 保护；滑点与重新估价不等于防夹。' } });
         if (path === '/api/tokens') {
           const snapshot = await monitor.snapshot();
@@ -91,6 +96,19 @@ export function createHttpServer({ monitor, baw, trades, protocol, metadata, dem
           res.writeHead(200, { 'Content-Type': `${type}; charset=utf-8` }); return res.end(content);
         }
       }
+      if (req.method === 'POST' && ['/api/settings/rpc/test', '/api/settings/rpc'].includes(path)) {
+        if (!rpcSettings) return send(404, { error: 'RPC 设置不可用' });
+        const body = await readJson(req);
+        if (rpcBusy) return send(409, { error: 'RPC 正在切换，请稍后再试' });
+        if (path.endsWith('/test')) return send(200, await rpcSettings.test(body));
+        if (previewPending || actionPending || trades.list().some(order => ['SUBMITTING', 'UNKNOWN', 'BROADCASTED', 'PENDING_CONFIRMATION', 'MINED'].includes(order.status))) return send(409, { error: '请先完成当前预览或订单核对，再切换 RPC' });
+        rpcBusy = true;
+        ++executionRevision;
+        trades.setLiveExecution(false);
+        invalidateWallet();
+        try { return send(200, { ...await rpcSettings.apply(body), demo, liveExecution: false }); }
+        finally { rpcBusy = false; }
+      }
       if (req.method === 'POST' && path === '/api/auth/start') {
         await readJson(req);
         if (demo) return send(200, { status: 'CONNECTED', message: '演示模式无需登录' });
@@ -99,6 +117,7 @@ export function createHttpServer({ monitor, baw, trades, protocol, metadata, dem
       }
       if (req.method === 'POST' && path === '/api/settings/execution') {
         const body = await readJson(req);
+        if (rpcBusy) return send(409, { error: 'RPC 正在切换，请稍后再试' });
         if (Object.keys(body).length !== 1 || typeof body.enabled !== 'boolean') throw new Error('enabled 必须为布尔值');
         if (demo) return send(200, { liveExecution: true, message: '演示模式不会签名或广播' });
         const revision = ++executionRevision;
@@ -119,10 +138,19 @@ export function createHttpServer({ monitor, baw, trades, protocol, metadata, dem
         finally { previewPending = false; }
       }
       if (req.method === 'POST' && path === '/api/execute') {
-        const result = await trades.execute(await readJson(req)); invalidateWallet(); return send(200, result);
+        const body = await readJson(req);
+        if (rpcBusy) return send(409, { error: 'RPC 正在切换，请稍后再试' });
+        actionPending++;
+        try { const result = await trades.execute(body); invalidateWallet(); return send(200, result); }
+        finally { actionPending--; }
       }
-      if (req.method === 'POST' && path === '/api/orders/link') return send(200, await trades.linkTransaction(await readJson(req)));
-      if (req.method === 'POST' && path === '/api/orders/release') return send(200, await trades.releaseOrder(await readJson(req)));
+      if (req.method === 'POST' && ['/api/orders/link', '/api/orders/release'].includes(path)) {
+        const body = await readJson(req);
+        if (rpcBusy) return send(409, { error: 'RPC 正在切换，请稍后再试' });
+        actionPending++;
+        try { return send(200, await (path.endsWith('/link') ? trades.linkTransaction(body) : trades.releaseOrder(body))); }
+        finally { actionPending--; }
+      }
       return send(404, { error: '接口不存在' });
     } catch (e) { send(400, { error: e.message, ...(e.cliError ? { cliError: e.cliError } : {}) }); }
   });
@@ -138,14 +166,19 @@ export async function main() {
   const port = Number(process.env.PORT || (demo ? 4319 : 4318));
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('PORT 必须为 1024–65535');
   let deps;
+  let rpcRuntime;
+  const rpcSettings = await createRpcSettings({
+    file: resolve(root, '.runtime', 'rpc-settings.json'), envUrl: process.env.BSC_RPC_URL,
+    onApply: async (url, persist) => demo ? persist() : rpcRuntime.apply(url, persist),
+  });
   if (demo) deps = createDemo();
   else {
     const [{ createProtocol }, { createMonitor }, { createBaw }, { createMetadataService }] = await Promise.all([import('./protocol.mjs'), import('./monitor.mjs'), import('./baw.mjs'), import('./metadata.mjs')]);
-    const protocol = createProtocol({ rpcUrl: process.env.BSC_RPC_URL || 'https://rpc-bsc.48.club' });
-    deps = { protocol, monitor: createMonitor({ protocol }), baw: createBaw(), metadata: createMetadataService() };
+    rpcRuntime = createRpcRuntime({ rpcUrl: rpcSettings.getUrl(), createProtocol, createMonitor });
+    deps = { ...rpcRuntime, baw: createBaw(), metadata: createMetadataService() };
   }
   const trades = createTradeService({ ...deps, demo, liveExecution, journalPath: resolve(root, '.runtime', demo ? 'orders-demo.json' : 'orders.json') });
-  const server = createHttpServer({ ...deps, trades, demo, liveExecution });
+  const server = createHttpServer({ ...deps, trades, rpcSettings, demo, liveExecution });
   server.on('error', e => { console.error(e.message); process.exitCode = 1; });
   server.listen(port, '127.0.0.1', () => {
     console.log(`Agetra Terminal ${demo ? '[DEMO — 不发交易]' : '[LIVE DATA]'} http://127.0.0.1:${port}`);

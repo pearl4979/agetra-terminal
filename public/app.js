@@ -12,6 +12,7 @@
     orderDrafts: new Map(), ordersSignature: null,
     position: null, positionError: null, positionBusy: false, positionVersion: 0,
     auth: null, authBusy: false, authPollBusy: false, executionBusy: false, walletVersion: 0,
+    rpc: null, rpcBusy: false,
   };
   let toastTimer;
   const phaseLabels = { bonding: '内盘', graduated: '已毕业', unknown: '待确认' };
@@ -932,6 +933,86 @@
     };
     schedule();
   }
+
+  function rpcInput() {
+    return { mode: $('rpc-custom').checked ? 'custom' : 'default', url: $('rpc-url').value.trim() };
+  }
+
+  function rpcMessage(message, tone = '') {
+    $('rpc-result').textContent = message;
+    $('rpc-result').className = `rpc-result${tone ? ` ${tone}` : ''}`;
+    $('rpc-result').hidden = !message;
+  }
+
+  function renderRpcControls() {
+    const custom = $('rpc-custom').checked;
+    $('rpc-custom-field').hidden = !custom;
+    $('rpc-url').required = custom && !state.rpc?.hasCustomUrl;
+    for (const id of ['rpc-default', 'rpc-custom', 'rpc-url', 'rpc-test', 'rpc-save', 'rpc-reset', 'rpc-close', 'rpc-reveal']) $(id).disabled = state.rpcBusy;
+    $('rpc-test').textContent = state.rpcBusy ? '处理中…' : '测试连接';
+    $('rpc-save').textContent = state.rpcBusy ? '请稍候…' : '保存并应用';
+  }
+
+  function renderRpcSettings() {
+    $('rpc-current').textContent = state.rpc.displayUrl;
+    $('rpc-default').checked = state.rpc.mode === 'default';
+    $('rpc-custom').checked = state.rpc.mode === 'custom';
+    $('rpc-demo-note').hidden = !state.rpc.demo;
+    $('rpc-url').value = '';
+    $('rpc-url').type = 'password';
+    $('rpc-reveal').checked = false;
+    renderRpcControls();
+  }
+
+  async function openRpcSettings() {
+    if (!state.session) return showToast('请等待本地服务连接完成。', true);
+    if (state.rpcBusy) return;
+    $('rpc-settings-open').disabled = true;
+    try {
+      state.rpc = await api('/api/settings/rpc');
+      renderRpcSettings(); rpcMessage('');
+      $('rpc-dialog').showModal();
+    } catch (error) { showToast(error.message, true); }
+    finally { $('rpc-settings-open').disabled = false; }
+  }
+
+  async function runRpcAction(apply, reset = false) {
+    if (state.rpcBusy) return;
+    if (apply && (state.executeBusy || state.previewBusy)) return rpcMessage('请先等待当前交易请求完成。', 'error');
+    const input = reset ? { mode: 'default' } : rpcInput();
+    if (input.mode === 'custom' && !input.url && !state.rpc?.hasCustomUrl) return rpcMessage('请输入 HTTPS RPC 地址。', 'error');
+    state.rpcBusy = true;
+    renderRpcControls();
+    rpcMessage(apply ? '正在检查并应用节点…' : '正在检查网络、最新区块和日志读取能力…', 'pending');
+    if (apply) invalidatePreview();
+    try {
+      const result = await api(apply ? '/api/settings/rpc' : '/api/settings/rpc/test', input);
+      const check = apply ? result.check : result;
+      if (apply) {
+        state.rpc = result; renderRpcSettings();
+        state.session = await api('/api/session'); renderMode();
+        state.position = null; state.positionVersion++;
+        await Promise.allSettled([loadTokens(), loadWallet(true), loadOrders()]);
+      }
+      rpcMessage(`${apply ? reset ? '已恢复默认节点。' : '节点已保存并应用。' : '连接成功。'}\nBSC 主网 · Chain ID ${check.chainId}\n最新区块 ${check.blockNumber} · 响应 ${check.latencyMs} ms · 日志读取正常`);
+    } catch (error) {
+      rpcMessage(error.message, 'error');
+      if (apply) {
+        try { state.session = await api('/api/session'); renderMode(); } catch {}
+      }
+    } finally { state.rpcBusy = false; renderRpcControls(); }
+  }
+
+  $('rpc-settings-open').addEventListener('click', openRpcSettings);
+  $('rpc-close').addEventListener('click', () => { if (!state.rpcBusy) $('rpc-dialog').close(); });
+  $('rpc-dialog').addEventListener('cancel', event => { if (state.rpcBusy) event.preventDefault(); });
+  $('rpc-dialog').addEventListener('close', () => { $('rpc-url').value = ''; $('rpc-url').type = 'password'; });
+  for (const id of ['rpc-default', 'rpc-custom']) $(id).addEventListener('change', () => { rpcMessage(''); renderRpcControls(); });
+  $('rpc-url').addEventListener('input', () => rpcMessage(''));
+  $('rpc-reveal').addEventListener('change', () => { $('rpc-url').type = $('rpc-reveal').checked ? 'text' : 'password'; });
+  $('rpc-test').addEventListener('click', () => runRpcAction(false));
+  $('rpc-reset').addEventListener('click', () => runRpcAction(true, true));
+  $('rpc-form').addEventListener('submit', event => { event.preventDefault(); runRpcAction(true); });
 
   $('search-input').addEventListener('input', renderTokens);
   $('bonding-only').addEventListener('change', renderTokens);

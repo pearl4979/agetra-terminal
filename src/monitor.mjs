@@ -9,6 +9,7 @@ const errorText = (error) => error?.shortMessage ?? error?.message ?? String(err
 export function createMonitor({ protocol, persist = true, pollMs = 6000, chunkSize = 1000, maxChunks = 4 } = {}) {
   const file = `${runtimeDir}/monitor-v1.json`;
   let running = false, timer, busy = false;
+  let currentPoll = Promise.resolve(), finishPoll;
   let lastBlock = manifest.deploymentBlock - 1;
   let events = new Map(), tokens = new Map();
   let status = 'idle', message = '尚未启动', updatedAt = null, head = null;
@@ -82,8 +83,10 @@ export function createMonitor({ protocol, persist = true, pollMs = 6000, chunkSi
   async function poll() {
     if (!running || busy) return;
     busy = true;
+    currentPoll = new Promise(resolve => { finishPoll = resolve; });
     try {
       await protocol.initialize();
+      if (!running) return;
       head = Math.max(manifest.deploymentBlock - 1, await protocol.provider.getBlockNumber() - manifest.confirmations);
       if (lastBlock > head) {
         for (const [key, event] of events) if (event.blockNumber > head) events.delete(key);
@@ -98,6 +101,7 @@ export function createMonitor({ protocol, persist = true, pollMs = 6000, chunkSi
         chunks++;
       }
       const unavailable = await refreshTokens();
+      if (!running) return;
       status = lastBlock < head ? 'backfill' : unavailable ? 'degraded' : 'live';
       message = lastBlock < head ? `正在补扫 ${lastBlock} / ${head}，目前列表不完整` : unavailable ? `${unavailable} 个代币的链上读取失败，已禁止交易` : `已同步至 ${lastBlock}，保留 ${manifest.confirmations} 个确认`;
       await save();
@@ -108,12 +112,13 @@ export function createMonitor({ protocol, persist = true, pollMs = 6000, chunkSi
     } finally {
       updatedAt = new Date().toISOString(); busy = false;
       if (running) { timer = setTimeout(poll, pollMs); timer.unref?.(); }
+      finishPoll();
     }
   }
 
   return {
     async start() { if (running) return snapshot(); running = true; status = 'starting'; message = '正在验证 OpenFour 注册表'; await load(); await poll(); return snapshot(); },
     snapshot,
-    stop() { running = false; clearTimeout(timer); },
+    stop() { running = false; clearTimeout(timer); return currentPoll; },
   };
 }

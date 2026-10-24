@@ -14,7 +14,7 @@ Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。
 
 从 [GitHub Releases](https://github.com/pearl4979/agetra-terminal/releases) 下载：
 
-- `Agetra-Terminal-v0.2.3-Windows-x64.zip`：Windows x64 便携版，已内置 Node.js 和依赖。
+- `Agetra-Terminal-v0.2.4-Windows-x64.zip`：Windows x64 便携版，已内置 Node.js 和依赖。
 - `SHA256SUMS.txt`：用于核对下载文件的 SHA-256。
 
 不要选择 GitHub 自动生成的 Source code ZIP 来替代便携版。该便携包不适用于 macOS、Linux 或 Windows ARM64。
@@ -29,7 +29,7 @@ Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。
 PowerShell 校验下载文件：
 
 ```powershell
-Get-FileHash .\Agetra-Terminal-v0.2.3-Windows-x64.zip -Algorithm SHA256
+Get-FileHash .\Agetra-Terminal-v0.2.4-Windows-x64.zip -Algorithm SHA256
 ```
 
 将结果与同一 Release 的 `SHA256SUMS.txt` 对照。
@@ -48,9 +48,19 @@ Get-FileHash .\Agetra-Terminal-v0.2.3-Windows-x64.zip -Algorithm SHA256
 
 默认使用 `https://rpc-bsc.48.club`。公共 RPC 可能限流或不可用；首次启动还可能需要补扫历史区块。
 
-需要换节点时，把 `.env.example` 复制为 `.env`，将 `BSC_RPC_URL` 改为你自己的 BSC 主网 RPC URL，然后重启。节点需要支持 `eth_getLogs` 及常规合约读取。当前没有前端 RPC 设置页面或自动备用节点切换。
+点击右上角 **RPC 节点**（手机上为齿轮按钮）：
 
-`.env` 可能包含你的 RPC 服务凭证，不要提交或转发。更换此 URL 改变的是终端读取与模拟通道，不能据此认定更换了 Binance 钱包的交易广播通道。
+1. 选择 **默认节点** 或 **自定义节点**；自定义节点填写 HTTPS RPC 地址，支持路径或查询参数中的 API Key。
+2. 点击 **测试连接**，检查 BSC 主网（Chain ID 56）、最新区块和日志读取能力，并查看响应时间。
+3. 点击 **保存并应用**，实时模式立即切换节点，无需重启。也可点击 **恢复默认节点**。
+
+![RPC 节点设置](./docs/images/agetra-rpc-settings.jpg)
+
+地址输入默认隐藏，已保存的 API Key 不会回显。配置保存在本机 `.runtime/rpc-settings.json`，重启后继续使用；演示模式保存的节点用于下次进入实时模式。节点切换会关闭真实交易开关并清除旧预览；存在未完成订单时，需先完成核对再切换。
+
+从源码运行时也可使用 `.env` 中的 `BSC_RPC_URL`。界面保存的设置优先于环境变量；节点需要支持 `eth_getLogs` 及常规合约读取。
+
+`.env` 和 `.runtime/rpc-settings.json` 可能包含你的 RPC 服务凭证，不要提交或转发。更换此 URL 改变的是终端读取与模拟通道，不能据此认定更换了 Binance 钱包的交易广播通道。
 
 ## 从源码运行
 
@@ -71,7 +81,7 @@ npm test
 
 仓库提供 Windows / Node.js 24.14.0 的测试 workflow，使用模拟钱包、模拟链上响应及本地 HTTP 服务，不配置钱包会话或交易凭证，不运行 `verify:chain`。测试结果以对应提交的 [Actions 记录](https://github.com/pearl4979/agetra-terminal/actions) 为准；配置 workflow 本身不代表测试已通过。
 
-Windows 自动化验证包含 93 项测试，覆盖便携启动器、重复启动、端口冲突及模拟交易流程。具体结果见 [Actions 记录](https://github.com/pearl4979/agetra-terminal/actions)。
+Windows 自动化验证包含 99 项测试，覆盖便携启动器、重复启动、端口冲突及模拟交易流程。具体结果见 [Actions 记录](https://github.com/pearl4979/agetra-terminal/actions)。
 
 ## 维护者打包
 
@@ -83,8 +93,8 @@ python scripts/package-release.py
 
 脚本读取并核对 `package.json` 与 `package-lock.json` 的名称、版本，只收录指定的项目文件。默认在 `dist/` 生成：
 
-- `Agetra-Terminal-v0.2.3-Windows-x64.zip`
-- `Agetra-Terminal-v0.2.3-Source.zip`
+- `Agetra-Terminal-v0.2.4-Windows-x64.zip`
+- `Agetra-Terminal-v0.2.4-Source.zip`
 - `SHA256SUMS.txt`
 
 便携包需要完整的 Windows `runtime/` 和原依赖树；它们只进入 Windows 包，保留原始许可文件。干净源码 checkout 可运行 `python scripts/package-release.py --source-only`，仅生成源码包及本次输出的校验文件。打包器会排除 `.env`、`.runtime`、Git 元数据和临时输出，并拒绝白名单目录中的符号链接。打包成功不等于 Windows 启动或真实交易验证成功。

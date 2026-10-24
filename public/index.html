@@ -14,7 +14,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="Agetra Terminal 首页"><span class="brand-icon" aria-hidden="true">&gt;_</span><span>AGETRA<span class="brand-byline">AGENT-NATIVE TRADING TERMINAL</span></span></a>
     <nav class="topnav" aria-label="主导航"><a href="#market" class="active">代币发现<span class="nav-dot"></span></a><a href="#orders">交易记录</a></nav>
-    <div class="topbar-right"><span class="chain-badge"><span class="chain-icon" aria-hidden="true">◆</span> BNB Chain</span><span id="mode-badge" class="badge neutral">连接中</span><span class="local-badge">LOCAL</span></div>
+    <div class="topbar-right"><span class="chain-badge"><span class="chain-icon" aria-hidden="true">◆</span> BNB Chain</span><span id="mode-badge" class="badge neutral">连接中</span><span class="local-badge">LOCAL</span><button id="rpc-settings-open" class="button subtle compact rpc-settings-open" type="button" aria-label="RPC 节点设置" title="RPC 节点设置"><span aria-hidden="true">⚙</span><span class="rpc-button-text">RPC 节点</span></button></div>
   </header>
 
   <main class="workspace">
@@ -54,6 +54,23 @@
     </div>
     <footer class="footer"><span><span class="footer-mark" aria-hidden="true">&gt;_</span> AGETRA · LOCAL FIRST. ON-CHAIN ALWAYS.</span><span>本地服务 <span class="footer-divider">·</span> BNB Smart Chain <span class="footer-divider">·</span> FOUR.MEME</span></footer>
   </main>
+  <dialog id="rpc-dialog" class="rpc-dialog" aria-labelledby="rpc-title">
+    <div class="rpc-dialog-heading"><div><div class="eyebrow">LOCAL SETTINGS</div><h2 id="rpc-title">RPC 节点</h2></div><button id="rpc-close" class="icon-button" type="button" aria-label="关闭 RPC 设置">×</button></div>
+    <form id="rpc-form" class="rpc-form">
+      <p class="rpc-description">选择公共节点，或使用自己的付费 RPC。配置只保存在这台电脑。</p>
+      <div class="rpc-options" role="group" aria-label="节点类型">
+        <label class="rpc-option"><input id="rpc-default" type="radio" name="rpc-mode" value="default" checked><span><strong>默认节点</strong><small>rpc-bsc.48.club</small></span></label>
+        <label class="rpc-option"><input id="rpc-custom" type="radio" name="rpc-mode" value="custom"><span><strong>自定义节点</strong><small>使用自己的 BSC RPC</small></span></label>
+      </div>
+      <div class="rpc-current"><span>当前节点</span><strong id="rpc-current" class="mono">正在读取…</strong></div>
+      <div id="rpc-custom-field" class="rpc-custom-field" hidden><label for="rpc-url">HTTPS RPC 地址</label><input id="rpc-url" class="rpc-url" type="password" autocomplete="off" spellcheck="false" placeholder="https://your-provider.example/v1/API_KEY" aria-describedby="rpc-url-help"><label class="check-label rpc-reveal"><input id="rpc-reveal" type="checkbox"><span>显示本次输入的地址</span></label><p id="rpc-url-help" class="field-help">支持路径或查询参数中的 API Key。已保存的地址不会回显，留空可继续使用。</p></div>
+      <p id="rpc-demo-note" class="rpc-note" hidden>演示使用离线快照；保存的节点将在实时模式中使用。</p>
+      <p class="rpc-note">用于行情、模拟和回执查询。钱包的交易广播由 Binance Agent Wallet 处理。</p>
+      <div id="rpc-result" class="rpc-result" role="status" aria-live="polite" hidden></div>
+      <div class="rpc-actions"><button id="rpc-test" class="button subtle" type="button">测试连接</button><button id="rpc-save" class="button primary" type="submit">保存并应用</button></div>
+      <button id="rpc-reset" class="rpc-reset" type="button">恢复默认节点</button>
+    </form>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>

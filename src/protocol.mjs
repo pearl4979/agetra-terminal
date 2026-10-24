@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { Contract, Interface, JsonRpcProvider, getAddress, parseUnits, formatUnits, zeroPadValue, toBeHex, ZeroAddress, id } from 'ethers';
+import { Contract, Interface, JsonRpcProvider, FetchRequest, getAddress, parseUnits, formatUnits, zeroPadValue, toBeHex, ZeroAddress, id } from 'ethers';
 
 const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'));
 export const manifest = read('../config/manifest.json');
@@ -26,7 +26,9 @@ export function decodeCreationTags(encoded) {
 }
 
 export function createProtocol({ rpcUrl = 'https://rpc-bsc.48.club', provider: injectedProvider } = {}) {
-  const provider = injectedProvider ?? new JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1, cacheTimeout: -1 });
+  const request = new FetchRequest(rpcUrl);
+  request.timeout = 15000;
+  const provider = injectedProvider ?? new JsonRpcProvider(request, undefined, { batchMaxCount: 1, cacheTimeout: -1 });
   const registry = new Contract(manifest.registry, abis.Registry, provider);
   const coreInterface = new Interface(abis.Core);
   let manager = manifest.core;
