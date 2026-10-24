@@ -8,19 +8,19 @@ Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。
 
 ![Agetra Terminal 产品界面（演示模式）](./docs/images/agetra-terminal-demo.jpg)
 
-*演示模式界面，展示代币雷达、快速交易和 Agent 钱包面板。*
+*演示模式使用当前已获取的 Test、Test2、Test3、Test4 代币快照，展示代币雷达、快速交易和 Agent 钱包面板。*
 
 ## Windows 用户：下载后双击使用
 
 从 [GitHub Releases](https://github.com/pearl4979/agetra-terminal/releases) 下载：
 
-- `Agetra-Terminal-v0.2.2-Windows-x64.zip`：Windows x64 便携版，已内置 Node.js 和依赖。
+- `Agetra-Terminal-v0.2.3-Windows-x64.zip`：Windows x64 便携版，已内置 Node.js 和依赖。
 - `SHA256SUMS.txt`：用于核对下载文件的 SHA-256。
 
 不要选择 GitHub 自动生成的 Source code ZIP 来替代便携版。该便携包不适用于 macOS、Linux 或 Windows ARM64。
 
 1. 将 ZIP **全部解压**到本机普通文件夹，例如 `C:\Agetra`。
-2. 先双击 `演示.cmd`。浏览器会打开 `http://127.0.0.1:4319`，使用模拟代币、余额和订单，不会发起链上交易。
+2. 先双击 `演示.cmd`。浏览器会打开 `http://127.0.0.1:4319`，使用 Test 系列代币的离线快照、模拟余额和订单，不会发起链上交易。
 3. 查看实时数据时，双击 `启动.cmd`，浏览器会打开 `http://127.0.0.1:4318`。
 4. 保持运行窗口打开；关闭它会停止本地服务。只关闭浏览器不会停止服务。
 
@@ -29,7 +29,7 @@ Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。
 PowerShell 校验下载文件：
 
 ```powershell
-Get-FileHash .\Agetra-Terminal-v0.2.2-Windows-x64.zip -Algorithm SHA256
+Get-FileHash .\Agetra-Terminal-v0.2.3-Windows-x64.zip -Algorithm SHA256
 ```
 
 将结果与同一 Release 的 `SHA256SUMS.txt` 对照。
@@ -83,8 +83,8 @@ python scripts/package-release.py
 
 脚本读取并核对 `package.json` 与 `package-lock.json` 的名称、版本，只收录指定的项目文件。默认在 `dist/` 生成：
 
-- `Agetra-Terminal-v0.2.2-Windows-x64.zip`
-- `Agetra-Terminal-v0.2.2-Source.zip`
+- `Agetra-Terminal-v0.2.3-Windows-x64.zip`
+- `Agetra-Terminal-v0.2.3-Source.zip`
 - `SHA256SUMS.txt`
 
 便携包需要完整的 Windows `runtime/` 和原依赖树；它们只进入 Windows 包，保留原始许可文件。干净源码 checkout 可运行 `python scripts/package-release.py --source-only`，仅生成源码包及本次输出的校验文件。打包器会排除 `.env`、`.runtime`、Git 元数据和临时输出，并拒绝白名单目录中的符号链接。打包成功不等于 Windows 启动或真实交易验证成功。

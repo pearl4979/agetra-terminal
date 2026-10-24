@@ -15,6 +15,11 @@ test('完整演示HTTP流程，跨站失败，确认后仅产生无hash的演示
   const session = await (await fetch(`${base}/api/session`)).json();
   assert.equal(session.mode, 'demo');
   const tokens = await (await fetch(`${base}/api/tokens`)).json();
+  assert.equal(tokens.tokens.length, 4);
+  assert.ok(tokens.tokens.every(token => token.demo && token.snapshotAt));
+  const image = await fetch(`${base}${tokens.tokens[0].imageUrl}`);
+  assert.equal(image.status, 200);
+  assert.equal(image.headers.get('content-type'), 'image/jpeg');
   const headers = { Origin: base, 'Content-Type': 'application/json', 'X-CSRF-Token': session.csrf };
   const preview = await (await fetch(`${base}/api/preview`, { method: 'POST', headers, body: JSON.stringify({ token: tokens.tokens[0].address, side: 'buy', amount: '0.01', slippageBps: 100 }) })).json();
   assert.equal(preview.demo, true);
@@ -22,5 +27,10 @@ test('完整演示HTTP流程，跨站失败，确认后仅产生无hash的演示
   const execute = await (await fetch(`${base}/api/execute`, { method: 'POST', headers, body: JSON.stringify({ previewId: preview.id, confirmed: true }) })).json();
   assert.equal(execute.status, 'DEMO_COMPLETED');
   assert.equal(execute.txHash, null);
+  const sellPreview = await trades.preview({ token: tokens.tokens[0].address.toLowerCase(), side: 'sell', amount: '1', slippageBps: 100 });
+  assert.equal(sellPreview.demo, true);
+  const sell = await trades.execute({ previewId: sellPreview.id, confirmed: true });
+  assert.equal(sell.status, 'DEMO_COMPLETED');
+  assert.equal(sell.txHash, null);
   assert.equal((await fetch(`${base}/api/execute`, { method: 'POST', headers: { ...headers, 'X-CSRF-Token': '' }, body: '{}' })).status, 403);
 });

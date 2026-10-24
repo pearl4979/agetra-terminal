@@ -31,6 +31,7 @@ SOURCE_TREES = {
     "config": {".json"},
     "public": {".html", ".css", ".js", ".svg", ".png", ".jpg", ".jpeg", ".webp", ".ico", ".woff", ".woff2"},
     "test": {".mjs"},
+    "docs/images": {".jpg", ".png", ".webp", ".svg"},
 }
 RUNTIME_FILES = (
     "runtime/node.exe", "runtime/LICENSE",

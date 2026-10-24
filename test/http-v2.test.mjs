@@ -20,7 +20,8 @@ test('像素版本返回真实边界和原始持仓，不接受任意图片CA', 
   let imageCalls = 0;
   const h = await harness(t, { metadata: { getImage: async () => { imageCalls++; return { body: Buffer.from('image'), contentType: 'image/png' }; } } });
   assert.equal(h.session.mev.status, 'unverified');
-  const positions = await (await fetch(`${h.base}/api/positions?token=0x0000000000000000000000000000000000000001`)).json();
+  const { tokens } = await (await fetch(`${h.base}/api/tokens`)).json();
+  const positions = await (await fetch(`${h.base}/api/positions?token=${tokens[0].address.toLowerCase()}`)).json();
   assert.equal(positions.decimals, 18); assert.match(positions.balance, /^\d+$/);
   assert.equal((await fetch(`${h.base}/api/token-image/0x1111111111111111111111111111111111111111`)).status, 404);
   assert.equal(imageCalls, 0);
