@@ -4,7 +4,11 @@ Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。当前
 
 本版只展示并处理 BNB Smart Chain 上 **Binance Agent ID Exclusive 指定模板**的已核验代币；交易仅支持该模板的 WBNB 计价内盘。它不是 Four.meme 全站列表，代币毕业后的外盘交易尚未支持。
 
-**真实目标代币的买入、授权、卖出完整闭环尚未验证，MEV / 防夹能力也未验证。** 模拟测试或演示成功不能替代真实交易验证。
+## 产品界面
+
+![Agetra Terminal 产品界面（演示模式）](./docs/images/agetra-terminal-demo.jpg)
+
+*演示模式界面，展示代币雷达、快速交易和 Agent 钱包面板。*
 
 ## Windows 用户：下载后双击使用
 
