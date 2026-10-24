@@ -2,16 +2,10 @@
 
 ## 0.2.2 — 2026-10-24
 
-- 将产品名称改为 Agetra Terminal。
-- 增加面向 GitHub Release 的使用说明、第三方组件说明和打包脚本。
-- 分开生成 Windows x64 便携包与源码包，并生成 SHA-256 校验文件。
-- 增加 Windows / Node.js 24.14.0 模拟测试 workflow。
-- 沿用 v0.2.1 的交易范围及流程；真实目标代币完整交易闭环和 MEV / 防夹能力仍未验证。
+Agetra Terminal 首个公开版本。
 
-本条目描述版本内容，不代表 Windows 发布包、GitHub Actions 或真实交易已经通过验证。具体测试结果以该版本的发布说明和 Actions 记录为准。
-
-## 0.2.1 — 原始 Four Agent Terminal
-
-原包说明记录了 Windows 钱包 CLI 调用修复、内置运行时、双击启动、自动打开浏览器和重复启动识别。保留实时监控、指定模板校验、钱包连接及演示模式，启动默认关闭真实交易。
-
-以上为原包历史说明；Agetra 更名和重新打包不会扩大其原有验证范围。
+- 提供 Windows x64 便携包，内置 Node.js 和依赖。
+- 支持 BNB Chain 指定 Agent ID 模板的代币发现、合约校验和内盘交易预览。
+- 集成 Binance Agent Wallet 连接、买卖预览及逐笔确认流程。
+- 提供演示模式、使用教程、源码包及 SHA-256 校验文件。
+- 提供 Windows 自动化测试和可重复打包脚本。

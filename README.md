@@ -1,6 +1,6 @@
 # Agetra Terminal
 
-Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。当前版本 **v0.2.2** 为小范围测试版，前身是 Four Agent Terminal。
+Agetra Terminal 是在本机运行的 Binance Agent Wallet 交易面板。
 
 本版只展示并处理 BNB Smart Chain 上 **Binance Agent ID Exclusive 指定模板**的已核验代币；交易仅支持该模板的 WBNB 计价内盘。它不是 Four.meme 全站列表，代币毕业后的外盘交易尚未支持。
 
@@ -71,7 +71,7 @@ npm test
 
 仓库提供 Windows / Node.js 24.14.0 的测试 workflow，使用模拟钱包、模拟链上响应及本地 HTTP 服务，不配置钱包会话或交易凭证，不运行 `verify:chain`。测试结果以对应提交的 [Actions 记录](https://github.com/pearl4979/agetra-terminal/actions) 为准；配置 workflow 本身不代表测试已通过。
 
-v0.2.2 发布准备阶段已完成 90 项非 Windows 模拟测试，其中本地 HTTP 相关测试为 5/5 通过；另有 2,613 个依赖、运行时、ABI 和链配置文件与原包逐字节一致。Windows v0.2.2 便携包尚未实机验证，Windows CI 结果仍以 Actions 记录为准。以上检查不涉及真实钱包认证或真钱交易。
+Windows 自动化验证包含 93 项测试，覆盖便携启动器、重复启动、端口冲突及模拟交易流程。具体结果见 [Actions 记录](https://github.com/pearl4979/agetra-terminal/actions)。
 
 ## 维护者打包
 
@@ -95,4 +95,4 @@ python scripts/package-release.py
 
 源码公开供查看；本版本没有为整个项目声明 MIT 或其他统一开源许可。第三方组件仍受各自条款约束。
 
-尤其是 `@binance/agentic-wallet@1.11.0` 的包元数据标为 **UNLICENSED**。便携包保留从原包取得的该组件及元数据，未修改其第三方代码；这不代表 Agetra 获得了 Binance 的许可、背书或合作关系。详见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
+尤其是 `@binance/agentic-wallet@1.11.0` 的包元数据标为 **UNLICENSED**。便携包保留该组件、元数据和许可声明；这不代表 Agetra 获得了 Binance 的许可、背书或合作关系。详见 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。

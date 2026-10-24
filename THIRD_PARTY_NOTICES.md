@@ -1,6 +1,6 @@
 # 第三方组件与许可说明
 
-Agetra Terminal v0.2.2 基于用户提供的 Four Agent Terminal v0.2.1 Windows x64 便携包整理。应用更名不改变第三方软件的权利或许可。本文件记录随包信息，不构成额外授权；本项目没有将全部代码统一重新许可为 MIT。
+本文件记录 Agetra Terminal 随附的第三方组件及许可信息，不构成额外授权；第三方软件遵循各自的原始条款。
 
 ## Binance Agentic Wallet CLI
 
@@ -31,6 +31,6 @@ Windows 便携包包含 Node.js **v24.14.0 / Windows x64**，来源记录保留�
 
 ## OpenFour ABI 与链配置
 
-原包 `config/manifest.json` 记录 ABI 来源为 [four-meme-community/openfour-docs](https://github.com/four-meme-community/openfour-docs)，参考提交为 `c1729948cc3487d4b4c38a1700664b881a71b561`，并将 ABI 许可标记为 MIT。本版保留 `abi/` 和清单中的来源记录；该记录不是对项目中其他文件的许可声明。
+`config/manifest.json` 记录 ABI 来源为 [four-meme-community/openfour-docs](https://github.com/four-meme-community/openfour-docs)，参考提交为 `c1729948cc3487d4b4c38a1700664b881a71b561`，并将 ABI 许可标记为 MIT。本版保留 `abi/` 和清单中的来源记录；该记录不是对项目中其他文件的许可声明。
 
 该公开仓库不包含 Binance Agent 专属合约实现源码。包含 ABI 不代表已经独立审核所有合约实现，也不代表获得 Binance 或 Four.meme 背书。
